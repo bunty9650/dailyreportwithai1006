@@ -1,91 +1,1919 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI Employee Monitoring System</title>
-  <link rel="stylesheet" href="/public/styles.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daily Employee Reporting System</title>
+  <style>
+    :root {
+      --bg-primary: #08111f;
+      --bg-secondary: #0f1d33;
+      --surface: rgba(255, 255, 255, 0.12);
+      --surface-strong: rgba(255, 255, 255, 0.18);
+      --surface-soft: rgba(255, 255, 255, 0.08);
+      --border: rgba(255, 255, 255, 0.2);
+      --text-primary: #f4f7fb;
+      --text-secondary: #b8c3d6;
+      --accent: #5eead4;
+      --accent-strong: #38bdf8;
+      --danger: #f87171;
+      --shadow: 0 24px 60px rgba(1, 10, 25, 0.45);
+      --radius-lg: 24px;
+      --radius-md: 16px;
+      --radius-sm: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      color: var(--text-primary);
+      background:
+        radial-gradient(circle at top left, rgba(56, 189, 248, 0.2), transparent 28%),
+        radial-gradient(circle at top right, rgba(94, 234, 212, 0.18), transparent 30%),
+        linear-gradient(135deg, var(--bg-primary), #101a2e 48%, var(--bg-secondary));
+      padding: 32px 16px;
+    }
+
+    .page-shell {
+      width: min(1120px, 100%);
+      margin: 0 auto;
+    }
+
+    .hero {
+      display: grid;
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+
+    .hero-badge {
+      width: fit-content;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(94, 234, 212, 0.12);
+      border: 1px solid rgba(94, 234, 212, 0.22);
+      color: var(--accent);
+      font-size: 0.82rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(2rem, 4vw, 3.3rem);
+      line-height: 1.05;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 720px;
+      color: var(--text-secondary);
+      font-size: 1rem;
+      line-height: 1.7;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 18px;
+      padding: 14px 18px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(22px);
+      -webkit-backdrop-filter: blur(22px);
+    }
+
+    .topbar-left,
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .topbar-right {
+      justify-content: flex-end;
+    }
+
+    .admin-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(94, 234, 212, 0.12);
+      border: 1px solid rgba(94, 234, 212, 0.18);
+      color: var(--accent);
+      font-size: 0.82rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .admin-status {
+      color: var(--text-secondary);
+      font-size: 0.92rem;
+      white-space: nowrap;
+    }
+
+    .admin-only {
+      display: none;
+    }
+
+    .admin-only.is-visible {
+      display: block;
+    }
+
+    .dashboard-panel {
+      margin-bottom: 24px;
+    }
+
+    .dashboard-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding: 22px 22px 0;
+    }
+
+    .dashboard-head h2 {
+      margin: 0;
+      font-size: 1.35rem;
+    }
+
+    .dashboard-body {
+      padding: 22px;
+      display: grid;
+      gap: 18px;
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .kpi-card {
+      padding: 16px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .kpi-card span {
+      display: block;
+      color: var(--text-secondary);
+      font-size: 0.86rem;
+      margin-bottom: 10px;
+    }
+
+    .kpi-card strong {
+      display: block;
+      font-size: 1.7rem;
+      line-height: 1.1;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+      gap: 16px;
+    }
+
+    .mini-panel {
+      padding: 16px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .mini-panel h3 {
+      margin: 0 0 10px;
+      font-size: 1rem;
+    }
+
+    .mini-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .mini-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .mini-row small {
+      color: var(--text-secondary);
+      display: block;
+      margin-top: 4px;
+    }
+
+    .panel-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .panel-head h3 {
+      margin: 0;
+    }
+
+    .scope-toggle {
+      display: inline-flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .scope-toggle button {
+      padding: 10px 14px;
+      font-size: 0.82rem;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-primary);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .scope-toggle button.is-active {
+      background: rgba(94, 234, 212, 0.14);
+      color: #dffef9;
+      border-color: rgba(94, 234, 212, 0.3);
+    }
+
+    .ai-comment-stack {
+      display: grid;
+      gap: 12px;
+    }
+
+    .ai-comment-card {
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .ai-comment-card span {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(94, 234, 212, 0.12);
+      border: 1px solid rgba(94, 234, 212, 0.18);
+      color: var(--accent);
+      font-size: 0.78rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .ai-comment-card p {
+      margin: 0;
+      line-height: 1.65;
+      color: var(--text-primary);
+      white-space: pre-wrap;
+    }
+
+    .ai-comment-card small {
+      display: block;
+      margin-top: 10px;
+      color: var(--text-secondary);
+      line-height: 1.55;
+    }
+
+    .table-panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .table-scroll-controls {
+      display: inline-flex;
+      gap: 8px;
+    }
+
+    .table-scroll-button {
+      padding: 10px 12px;
+      font-size: 0.85rem;
+      min-width: 42px;
+    }
+
+    .table-wrap {
+      overflow: auto;
+      padding-bottom: 8px;
+      max-height: 460px;
+      min-height: 0;
+      scrollbar-color: rgba(94, 234, 212, 0.4) rgba(255, 255, 255, 0.06);
+      scrollbar-width: thin;
+      max-width: 100%;
+      scrollbar-gutter: stable;
+    }
+
+    .table-wrap::-webkit-scrollbar {
+      height: 10px;
+    }
+
+    .table-wrap::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 999px;
+    }
+
+    .table-wrap::-webkit-scrollbar-thumb {
+      background: rgba(94, 234, 212, 0.35);
+      border-radius: 999px;
+    }
+
+    table {
+      width: max-content;
+      min-width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 12px 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      vertical-align: top;
+      font-size: 0.94rem;
+      white-space: nowrap;
+    }
+
+    th {
+      color: var(--text-secondary);
+      font-weight: 600;
+    }
+
+    .note {
+      color: var(--text-secondary);
+      font-size: 0.92rem;
+    }
+
+    .auth-modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      z-index: 50;
+    }
+
+    .auth-modal.is-open {
+      display: flex;
+    }
+
+    .auth-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(2, 8, 23, 0.72);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .auth-card {
+      position: relative;
+      width: min(100%, 440px);
+      padding: 24px;
+      border-radius: 22px;
+      background: linear-gradient(180deg, rgba(16, 26, 46, 0.96), rgba(8, 17, 31, 0.98));
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+    }
+
+    .auth-card h3 {
+      margin: 0 0 8px;
+      font-size: 1.35rem;
+    }
+
+    .auth-card p {
+      margin: 0 0 18px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .auth-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .auth-actions {
+      justify-content: flex-end;
+      margin-top: 18px;
+    }
+
+    .auth-message {
+      min-height: 20px;
+      margin-top: 12px;
+      color: var(--danger);
+      font-size: 0.92rem;
+    }
+
+    .app-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(22px);
+      -webkit-backdrop-filter: blur(22px);
+      overflow: hidden;
+    }
+
+    .form-layout {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+    }
+
+    .sidebar {
+      padding: 28px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
+      border-right: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .sidebar h2 {
+      margin-top: 0;
+      margin-bottom: 14px;
+      font-size: 1.4rem;
+    }
+
+    .sidebar p {
+      color: var(--text-secondary);
+      line-height: 1.65;
+      margin-bottom: 22px;
+    }
+
+    .feature-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .feature-item {
+      padding: 14px 16px;
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .feature-item strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 0.96rem;
+    }
+
+    .feature-item span {
+      color: var(--text-secondary);
+      font-size: 0.92rem;
+      line-height: 1.5;
+    }
+
+    .feature-item .status-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      color: #cdefff;
+      font-size: 0.78rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .form-panel {
+      padding: 28px;
+    }
+
+    form {
+      display: grid;
+      gap: 22px;
+    }
+
+    .section-card {
+      padding: 22px;
+      border-radius: 22px;
+      background: var(--surface-soft);
+      border: 1px solid rgba(255, 255, 255, 0.09);
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      margin: 0;
+      font-size: 1.15rem;
+    }
+
+    .section-subtitle {
+      margin: 4px 0 0;
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .field-group {
+      display: grid;
+      gap: 8px;
+    }
+
+    label {
+      font-size: 0.94rem;
+      color: var(--text-primary);
+    }
+
+    input,
+    textarea,
+    select {
+      width: 100%;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(7, 16, 31, 0.45);
+      color: var(--text-primary);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      outline: none;
+      transition: border-color 0.25s ease, transform 0.2s ease, background 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    input::placeholder,
+    textarea::placeholder,
+    select::placeholder {
+      color: rgba(184, 195, 214, 0.58);
+    }
+
+    input:focus,
+    textarea:focus {
+      border-color: rgba(94, 234, 212, 0.5);
+      background: rgba(7, 16, 31, 0.62);
+      box-shadow: 0 0 0 4px rgba(94, 234, 212, 0.12);
+      transform: translateY(-1px);
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    select {
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      background-image: linear-gradient(45deg, transparent 50%, rgba(244, 247, 251, 0.9) 50%), linear-gradient(135deg, rgba(244, 247, 251, 0.9) 50%, transparent 50%);
+      background-position: calc(100% - 18px) calc(50% - 3px), calc(100% - 12px) calc(50% - 3px);
+      background-size: 6px 6px, 6px 6px;
+      background-repeat: no-repeat;
+      padding-right: 40px;
+    }
+
+    .filters-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1.4fr auto;
+      gap: 14px;
+      padding: 22px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .filter-field label {
+      font-size: 0.84rem;
+      color: var(--text-secondary);
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    .filter-actions {
+      display: flex;
+      align-items: end;
+      gap: 10px;
+    }
+
+    .performance-grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .performance-card {
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .performance-card span {
+      display: block;
+      color: var(--text-secondary);
+      font-size: 0.82rem;
+      margin-bottom: 8px;
+    }
+
+    .performance-card strong {
+      display: block;
+      font-size: 1.45rem;
+      line-height: 1.1;
+    }
+
+    .dashboard-span {
+      grid-column: 1 / -1;
+    }
+
+    .checkbox-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .checkbox-pill {
+      position: relative;
+    }
+
+    .checkbox-pill input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .checkbox-pill label {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 120px;
+      padding: 12px 16px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.04);
+      cursor: pointer;
+      transition: all 0.22s ease;
+    }
+
+    .checkbox-pill input:checked + label {
+      background: rgba(56, 189, 248, 0.18);
+      border-color: rgba(56, 189, 248, 0.42);
+      color: #dff7ff;
+      box-shadow: 0 14px 30px rgba(56, 189, 248, 0.18);
+    }
+
+    .prospects-wrap {
+      display: grid;
+      gap: 14px;
+    }
+
+    .prospect-row {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr 1fr auto;
+      gap: 12px;
+      align-items: end;
+      padding: 14px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 14px;
+      margin-top: 10px;
+    }
+
+    .button-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    button {
+      border: none;
+      border-radius: 999px;
+      padding: 14px 22px;
+      font-size: 0.96rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.25s ease, opacity 0.2s ease;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+    }
+
+    .primary-button {
+      background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+      color: #04131d;
+      box-shadow: 0 18px 36px rgba(56, 189, 248, 0.25);
+    }
+
+    .secondary-button {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-primary);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .danger-button {
+      background: rgba(248, 113, 113, 0.16);
+      color: #ffdada;
+      border: 1px solid rgba(248, 113, 113, 0.24);
+      padding-inline: 16px;
+    }
+
+    .status-text {
+      min-height: 24px;
+      color: var(--text-secondary);
+      font-size: 0.92rem;
+    }
+
+    .required-mark {
+      color: #7dd3fc;
+    }
+
+    @media (max-width: 980px) {
+      .form-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .kpi-grid,
+      .dashboard-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .filters-row,
+      .performance-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 720px) {
+      body {
+        padding: 20px 12px;
+      }
+
+      .form-panel,
+      .sidebar,
+      .section-card {
+        padding: 18px;
+      }
+
+      .form-grid,
+      .stats-grid,
+      .prospect-row {
+        grid-template-columns: 1fr;
+      }
+
+      .kpi-grid,
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .filters-row,
+      .performance-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .filter-actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .button-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .button-group {
+        width: 100%;
+      }
+
+      .button-group button,
+      .primary-button {
+        width: 100%;
+      }
+    }
+  </style>
 </head>
 <body>
-  <div class="bg-glow bg-glow-left"></div>
-  <div class="bg-glow bg-glow-right"></div>
+  <div class="page-shell">
+    <div class="topbar">
+      <div class="topbar-left">
+        <div class="admin-pill">Admin Access</div>
+        <div class="admin-status" id="adminStatusText">Stats locked. Login required.</div>
+      </div>
+      <div class="topbar-right">
+        <button class="secondary-button" id="adminAuthButton" type="button">Admin Login</button>
+      </div>
+    </div>
 
-  <main class="shell">
     <header class="hero">
-      <div>
-        <p class="eyebrow">AI Sales Manager</p>
-        <h1>Employee performance, analyzed daily.</h1>
-        <p class="lede">
-          Track calls, leads, conversions, and revenue. Detect issues early and send actionable feedback to every employee.
-        </p>
-      </div>
-      <div class="hero-card">
-        <span class="hero-card-label">System status</span>
-        <strong id="healthStatus">Loading...</strong>
-        <p id="healthDetail">Connecting to the analysis engine.</p>
-      </div>
+      <div class="hero-badge">Daily Reporting Dashboard</div>
+      <p class="hero-badge" style="margin: 0; width: fit-content;">Sky Education Group</p>
+      <h1>Daily Employee Reporting System</h1>
+      <p>
+        Capture daily performance, highlight top prospects, and instantly share a polished report to WhatsApp while saving a background copy to Google Sheets.
+      </p>
     </header>
 
-    <section class="grid metrics" id="metrics"></section>
-
-    <section class="panel">
-      <div class="panel-head">
+    <section class="app-card dashboard-panel admin-only" id="adminDashboardPanel">
+      <div class="dashboard-head">
         <div>
-          <p class="eyebrow">Insights</p>
-          <h2>Dashboard summary</h2>
+          <div class="hero-badge" style="margin-bottom:10px;">Live Sheet Stats</div>
+          <h2>Google Sheet se live data pull</h2>
+          <p class="note">Ye panel Apps Script ke doGet endpoint se rows aur summary read karta hai.</p>
         </div>
-        <button id="refreshBtn" class="button">Refresh</button>
+        <button class="secondary-button" id="refreshStatsButton" type="button">Refresh Stats</button>
       </div>
-      <div id="summaryText" class="summary-text"></div>
-    </section>
-
-    <section class="grid two-col">
-      <article class="panel">
-        <div class="panel-head">
-          <div>
-            <p class="eyebrow">Top performers</p>
-            <h2>Best scores</h2>
+      <div class="filters-row">
+        <div class="field-group filter-field">
+          <label for="startDateFilter">Start Date</label>
+          <input id="startDateFilter" type="date">
+        </div>
+        <div class="field-group filter-field">
+          <label for="endDateFilter">End Date</label>
+          <input id="endDateFilter" type="date">
+        </div>
+        <div class="field-group filter-field">
+          <label for="personFilter">Particular Person</label>
+          <select id="personFilter">
+            <option value="">All People</option>
+          </select>
+        </div>
+        <div class="filter-actions">
+          <button class="primary-button" id="applyFiltersButton" type="button">Apply Filters</button>
+          <button class="secondary-button" id="resetFiltersButton" type="button">Reset</button>
+        </div>
+      </div>
+      <div class="dashboard-body">
+        <div class="mini-panel dashboard-span">
+          <h3 id="personPerformanceTitle">Particular Person Performance</h3>
+          <div id="personPerformanceBody" class="performance-grid">
+            <div class="performance-card">
+              <span>Tip</span>
+              <strong>Select a person</strong>
+            </div>
+            <div class="performance-card">
+              <span>Note</span>
+              <strong>Use filters</strong>
+            </div>
           </div>
         </div>
-        <div id="topPerformers" class="list"></div>
-      </article>
-
-      <article class="panel">
-        <div class="panel-head">
-          <div>
-            <p class="eyebrow">Weak employees</p>
-            <h2>Needs coaching</h2>
+        <div class="mini-panel dashboard-span">
+          <div class="panel-head">
+            <h3 id="aiInsightTitle">Gemini Performance Comment</h3>
+            <div class="scope-toggle" role="tablist" aria-label="Gemini review scope">
+              <button id="geminiScopeOverallButton" type="button" class="is-active">Overall Review</button>
+              <button id="geminiScopePersonButton" type="button">Person Review</button>
+            </div>
+          </div>
+          <div id="aiInsightBody" class="ai-comment-stack">
+            <div class="ai-comment-card">
+              <span>Tip</span>
+              <p>Select a person or apply filters to see the latest AI comment.</p>
+            </div>
           </div>
         </div>
-        <div id="weakEmployees" class="list"></div>
-      </article>
+        <div class="kpi-grid" id="kpiGrid"></div>
+        <div class="dashboard-grid">
+          <div class="mini-panel">
+            <h3>Top Managers</h3>
+            <div id="topManagersList" class="mini-list"></div>
+          </div>
+          <div class="mini-panel">
+            <div class="table-panel-header">
+              <h3>Latest Reports</h3>
+              <div class="table-scroll-controls">
+                <button class="secondary-button table-scroll-button" id="latestReportsPrevButton" type="button" aria-label="Scroll reports left">←</button>
+                <button class="secondary-button table-scroll-button" id="latestReportsNextButton" type="button" aria-label="Scroll reports right">→</button>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead id="dynamicTableHead"></thead>
+                <tbody id="latestReportsBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div id="sheetStatus" class="note">Waiting to load sheet stats...</div>
+      </div>
     </section>
 
-    <section class="panel">
-      <div class="panel-head">
-        <div>
-          <p class="eyebrow">Recent activity</p>
-          <h2>Latest analyzed reports</h2>
+    <main class="app-card">
+      <div class="form-layout">
+        <aside class="sidebar">
+          <h2>Fast, polished, and team-ready</h2>
+          <p>
+            Fill in your daily numbers, add as many top prospects as needed, and submit once to notify your manager and archive the report automatically.
+          </p>
+
+          <div class="feature-list">
+            <div class="feature-item">
+              <strong>WhatsApp-first flow</strong>
+              <span>Opens the formatted report immediately to avoid popup blocking.</span>
+            </div>
+            <div class="feature-item">
+              <strong>Google Sheets backup</strong>
+              <span>Sends the same data to your Apps Script web app in the background.</span>
+            </div>
+            <div class="feature-item">
+              <strong>Dynamic prospects</strong>
+              <span>Add or remove prospect rows anytime with clean structured formatting.</span>
+            </div>
+            <div class="feature-item">
+              <strong>Gemini AI comments</strong>
+              <span>Weekly and monthly performance comments are generated automatically after submit.</span>
+              <div class="status-chip">Powered by Gemini</div>
+            </div>
+          </div>
+        </aside>
+
+        <section class="form-panel">
+          <form id="reportForm" novalidate>
+            <div class="section-card">
+              <div class="section-header">
+                <div>
+                  <h3 class="section-title">Basic Info</h3>
+                  <p class="section-subtitle">Start with manager and employee details.</p>
+                </div>
+              </div>
+              <div class="form-grid">
+                <div class="field-group">
+                  <label for="managerName">Manager Name <span class="required-mark">*</span></label>
+                  <input id="managerName" name="managerName" type="text" placeholder="Enter manager name" required>
+                </div>
+                <div class="field-group">
+                  <label for="employeeName">Your Name <span class="required-mark">*</span></label>
+                  <input id="employeeName" name="employeeName" type="text" placeholder="Enter your full name" required>
+                </div>
+              </div>
+            </div>
+
+            <div class="section-card">
+              <div class="section-header">
+                <div>
+                  <h3 class="section-title">Today's Report</h3>
+                  <p class="section-subtitle">Enter daily call and lead performance metrics.</p>
+                </div>
+              </div>
+              <div class="stats-grid">
+                <div class="field-group">
+                  <label for="leads">Leads <span class="required-mark">*</span></label>
+                  <input id="leads" name="leads" type="number" min="0" placeholder="0" required>
+                </div>
+                <div class="field-group">
+                  <label for="totalCalls">Total Calls <span class="required-mark">*</span></label>
+                  <input id="totalCalls" name="totalCalls" type="number" min="0" placeholder="0" required>
+                </div>
+                <div class="field-group">
+                  <label for="connectedCalls">Connected Calls <span class="required-mark">*</span></label>
+                  <input id="connectedCalls" name="connectedCalls" type="number" min="0" placeholder="0" required>
+                </div>
+                <div class="field-group">
+                  <label for="interested">Interested <span class="required-mark">*</span></label>
+                  <input id="interested" name="interested" type="number" min="0" placeholder="0" required>
+                </div>
+                <div class="field-group">
+                  <label for="hotProspects">Hot Prospects <span class="required-mark">*</span></label>
+                  <input id="hotProspects" name="hotProspects" type="number" min="0" placeholder="0" required>
+                </div>
+                <div class="field-group">
+                  <label for="registration">Registration <span class="required-mark">*</span></label>
+                  <input id="registration" name="registration" type="number" min="0" placeholder="0" required>
+                </div>
+                <div class="field-group">
+                  <label for="admissions">Admissions <span class="required-mark">*</span></label>
+                  <input id="admissions" name="admissions" type="number" min="0" placeholder="0" required>
+                </div>
+              </div>
+            </div>
+
+            <div class="section-card">
+              <div class="section-header">
+                <div>
+                  <h3 class="section-title">Lead Sources</h3>
+                  <p class="section-subtitle">Select all sources that contributed today.</p>
+                </div>
+              </div>
+              <div class="checkbox-grid">
+                <div class="checkbox-pill">
+                  <input id="sourceWhatsapp" name="leadSources" type="checkbox" value="WhatsApp">
+                  <label for="sourceWhatsapp">WhatsApp</label>
+                </div>
+                <div class="checkbox-pill">
+                  <input id="sourceInstagram" name="leadSources" type="checkbox" value="Instagram">
+                  <label for="sourceInstagram">Instagram</label>
+                </div>
+                <div class="checkbox-pill">
+                  <input id="sourceFacebook" name="leadSources" type="checkbox" value="Facebook">
+                  <label for="sourceFacebook">Facebook</label>
+                </div>
+                <div class="checkbox-pill">
+                  <input id="sourceDuSol" name="leadSources" type="checkbox" value="DU SOL">
+                  <label for="sourceDuSol">DU SOL</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="section-card">
+              <div class="section-header">
+                <div>
+                  <h3 class="section-title">Top Prospects</h3>
+                  <p class="section-subtitle">Add your strongest prospects in a structured format.</p>
+                </div>
+                <button id="addProspectButton" class="secondary-button" type="button">+ Add More</button>
+              </div>
+              <div id="prospectsContainer" class="prospects-wrap"></div>
+            </div>
+
+            <div class="section-card">
+              <div class="section-header">
+                <div>
+                  <h3 class="section-title">Planning & Remarks</h3>
+                  <p class="section-subtitle">Share priorities for tomorrow and any key notes.</p>
+                </div>
+              </div>
+              <div class="form-grid">
+                <div class="field-group">
+                  <label for="tomorrowPlan">Tomorrow Plan <span class="required-mark">*</span></label>
+                  <textarea id="tomorrowPlan" name="tomorrowPlan" placeholder="Write your plan for tomorrow..." required></textarea>
+                </div>
+                <div class="field-group">
+                  <label for="remarks">Remarks</label>
+                  <textarea id="remarks" name="remarks" placeholder="Add any important remarks or updates..."></textarea>
+                </div>
+              </div>
+            </div>
+
+            <div class="section-card">
+              <div class="section-header">
+                <div>
+                  <h3 class="section-title">AI Comment</h3>
+                  <p class="section-subtitle">Gemini will write weekly and monthly performance comments after submit.</p>
+                </div>
+              </div>
+              <div class="checkbox-grid">
+                <div class="checkbox-pill">
+                  <input id="useGemini" name="useGemini" type="checkbox" checked>
+                  <label for="useGemini">Generate with Gemini</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="button-row">
+              <div class="status-text" id="statusMessage">Ready to submit your daily report.</div>
+              <div class="button-group">
+                <button class="secondary-button" type="reset">Reset Form</button>
+                <button class="primary-button" id="submitButton" type="submit">Send Report</button>
+              </div>
+            </div>
+          </form>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <div class="auth-modal" id="adminModal" aria-hidden="true">
+    <div class="auth-backdrop" id="adminBackdrop"></div>
+    <div class="auth-card" role="dialog" aria-modal="true" aria-labelledby="adminLoginTitle">
+      <h3 id="adminLoginTitle">Admin Login</h3>
+      <p>Sheet stats dekhne ke liye admin credentials enter karo.</p>
+      <div class="auth-grid">
+        <div class="field-group">
+          <label for="adminUsername">Username</label>
+          <input id="adminUsername" type="text" placeholder="Enter admin username" autocomplete="username">
+        </div>
+        <div class="field-group">
+          <label for="adminPassword">Password</label>
+          <input id="adminPassword" type="password" placeholder="Enter admin password" autocomplete="current-password">
         </div>
       </div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Employee ID</th>
-              <th>Date</th>
-              <th>Score</th>
-              <th>Issue</th>
-              <th>Revenue</th>
-            </tr>
-          </thead>
-          <tbody id="recentReports"></tbody>
-        </table>
+      <div class="button-row auth-actions">
+        <div class="button-group">
+          <button class="secondary-button" id="adminCancelButton" type="button">Cancel</button>
+          <button class="primary-button" id="adminLoginButton" type="button">Login</button>
+        </div>
       </div>
-    </section>
-  </main>
+      <div class="auth-message" id="adminAuthMessage"></div>
+    </div>
+  </div>
 
-  <script src="/public/app.js"></script>
+  <script>
+    const WHATSAPP_URL = "https://wa.me/919289062707?text=";
+    const REPORT_SUBMIT_URL = "/api/report-submit";
+    const REPORT_OVERVIEW_URL = "/api/report-overview";
+    const SHEET_STATS_URL = "/api/sheet-stats";
+    const ADMIN_USERNAME = "skyeducation.co.in";
+    const ADMIN_PASSWORD = "skyeducation.admin";
+    const ADMIN_AUTH_KEY = "skyeducation_admin_authenticated";
+
+    const reportForm = document.getElementById("reportForm");
+    const prospectsContainer = document.getElementById("prospectsContainer");
+    const addProspectButton = document.getElementById("addProspectButton");
+    const statusMessage = document.getElementById("statusMessage");
+    const adminAuthButton = document.getElementById("adminAuthButton");
+    const adminStatusText = document.getElementById("adminStatusText");
+    const adminDashboardPanel = document.getElementById("adminDashboardPanel");
+    const adminModal = document.getElementById("adminModal");
+    const adminBackdrop = document.getElementById("adminBackdrop");
+    const adminUsername = document.getElementById("adminUsername");
+    const adminPassword = document.getElementById("adminPassword");
+    const adminLoginButton = document.getElementById("adminLoginButton");
+    const adminCancelButton = document.getElementById("adminCancelButton");
+    const adminAuthMessage = document.getElementById("adminAuthMessage");
+    const refreshStatsButton = document.getElementById("refreshStatsButton");
+    const applyFiltersButton = document.getElementById("applyFiltersButton");
+    const resetFiltersButton = document.getElementById("resetFiltersButton");
+    const startDateFilter = document.getElementById("startDateFilter");
+    const endDateFilter = document.getElementById("endDateFilter");
+    const personFilter = document.getElementById("personFilter");
+    const sheetStatus = document.getElementById("sheetStatus");
+    const kpiGrid = document.getElementById("kpiGrid");
+    const personPerformanceTitle = document.getElementById("personPerformanceTitle");
+    const personPerformanceBody = document.getElementById("personPerformanceBody");
+    const aiInsightTitle = document.getElementById("aiInsightTitle");
+    const aiInsightBody = document.getElementById("aiInsightBody");
+    const geminiScopeOverallButton = document.getElementById("geminiScopeOverallButton");
+    const geminiScopePersonButton = document.getElementById("geminiScopePersonButton");
+    const topManagersList = document.getElementById("topManagersList");
+    const dynamicTableHead = document.getElementById("dynamicTableHead");
+    const latestReportsBody = document.getElementById("latestReportsBody");
+    const latestReportsPrevButton = document.getElementById("latestReportsPrevButton");
+    const latestReportsNextButton = document.getElementById("latestReportsNextButton");
+
+    let prospectIndex = 0;
+    let adminLoginOpen = false;
+    let sheetPeopleLoaded = false;
+    let geminiReviewScope = localStorage.getItem("skyeducation_gemini_review_scope") || "overall";
+
+    function isAdminLoggedIn() {
+      return localStorage.getItem(ADMIN_AUTH_KEY) === "1";
+    }
+
+    function openAdminModal() {
+      adminLoginOpen = true;
+      adminModal.classList.add("is-open");
+      adminModal.setAttribute("aria-hidden", "false");
+      adminAuthMessage.textContent = "";
+      window.setTimeout(() => adminUsername.focus(), 0);
+    }
+
+    function closeAdminModal() {
+      adminLoginOpen = false;
+      adminModal.classList.remove("is-open");
+      adminModal.setAttribute("aria-hidden", "true");
+      adminAuthMessage.textContent = "";
+      adminUsername.value = "";
+      adminPassword.value = "";
+    }
+
+    function setAdminState(loggedIn) {
+      if (loggedIn) {
+        localStorage.setItem(ADMIN_AUTH_KEY, "1");
+        adminDashboardPanel.classList.add("is-visible");
+        adminStatusText.textContent = "Admin mode active. Stats are unlocked.";
+        adminAuthButton.textContent = "Admin Logout";
+        loadSheetStats({ refreshPeople: true });
+        return;
+      }
+
+      localStorage.removeItem(ADMIN_AUTH_KEY);
+      adminDashboardPanel.classList.remove("is-visible");
+      adminStatusText.textContent = "Stats locked. Login required.";
+      adminAuthButton.textContent = "Admin Login";
+      sheetStatus.textContent = "Admin login required to view sheet stats.";
+    }
+
+    function syncAdminState() {
+      setAdminState(isAdminLoggedIn());
+    }
+
+    function syncGeminiScopeButtons() {
+      geminiScopeOverallButton.classList.toggle("is-active", geminiReviewScope === "overall");
+      geminiScopePersonButton.classList.toggle("is-active", geminiReviewScope === "person");
+    }
+
+    function setGeminiReviewScope(scope) {
+      geminiReviewScope = scope === "person" ? "person" : "overall";
+      localStorage.setItem("skyeducation_gemini_review_scope", geminiReviewScope);
+      syncGeminiScopeButtons();
+      if (isAdminLoggedIn()) {
+        loadSheetStats({ refreshPeople: false });
+      }
+    }
+
+    function scrollLatestReports(direction) {
+      const scrollContainer = document.querySelector(".table-wrap");
+      if (!scrollContainer) {
+        return;
+      }
+
+      const distance = Math.max(260, Math.floor(scrollContainer.clientWidth * 0.8));
+      scrollContainer.scrollBy({
+        left: direction * distance,
+        behavior: "smooth"
+      });
+    }
+
+    function createProspectRow() {
+      prospectIndex += 1;
+
+      const prospectRow = document.createElement("div");
+      prospectRow.className = "prospect-row";
+      prospectRow.dataset.index = String(prospectIndex);
+
+      prospectRow.innerHTML = `
+        <div class="field-group">
+          <label for="prospectName${prospectIndex}">Name</label>
+          <input id="prospectName${prospectIndex}" class="prospect-name" type="text" placeholder="Prospect name">
+        </div>
+        <div class="field-group">
+          <label for="prospectCourse${prospectIndex}">Course</label>
+          <input id="prospectCourse${prospectIndex}" class="prospect-course" type="text" placeholder="Course name">
+        </div>
+        <div class="field-group">
+          <label for="prospectContact${prospectIndex}">Contact Number</label>
+          <input id="prospectContact${prospectIndex}" class="prospect-contact" type="tel" placeholder="Phone number">
+        </div>
+        <button class="danger-button remove-prospect-button" type="button" aria-label="Remove this prospect">Remove</button>
+      `;
+
+      prospectsContainer.appendChild(prospectRow);
+      updateRemoveButtons();
+    }
+
+    function updateRemoveButtons() {
+      const removeButtons = prospectsContainer.querySelectorAll(".remove-prospect-button");
+      removeButtons.forEach((button) => {
+        button.disabled = prospectsContainer.children.length === 1;
+        button.style.opacity = prospectsContainer.children.length === 1 ? "0.45" : "1";
+        button.style.cursor = prospectsContainer.children.length === 1 ? "not-allowed" : "pointer";
+      });
+    }
+
+    function getSelectedSources() {
+      return Array.from(document.querySelectorAll('input[name="leadSources"]:checked')).map((source) => source.value);
+    }
+
+    function getProspects() {
+      const rows = prospectsContainer.querySelectorAll(".prospect-row");
+
+      return Array.from(rows)
+        .map((row) => {
+          const name = row.querySelector(".prospect-name").value.trim();
+          const course = row.querySelector(".prospect-course").value.trim();
+          const contact = row.querySelector(".prospect-contact").value.trim();
+
+          return { name, course, contact };
+        })
+        .filter((prospect) => prospect.name || prospect.course || prospect.contact);
+    }
+
+    function buildProspectList(prospects) {
+      if (!prospects.length) {
+        return "No top prospects added";
+      }
+
+      return prospects
+        .map((prospect, index) => `${index + 1}. ${prospect.name || "-"} | ${prospect.course || "-"} | ${prospect.contact || "-"}`)
+        .join("\n");
+    }
+
+    function buildPayload() {
+      const now = new Date();
+      const sources = getSelectedSources();
+      const prospects = getProspects();
+      const managerName = document.getElementById("managerName").value.trim();
+      const leads = document.getElementById("leads").value.trim();
+      const totalCalls = document.getElementById("totalCalls").value.trim();
+      const connectedCalls = document.getElementById("connectedCalls").value.trim();
+      const interested = document.getElementById("interested").value.trim();
+      const hotProspects = document.getElementById("hotProspects").value.trim();
+      const registration = document.getElementById("registration").value.trim();
+      const admissions = document.getElementById("admissions").value.trim();
+      const leadSourcesText = sources.length ? sources.join(", ") : "None";
+      const topProspectsText = buildProspectList(prospects);
+      const tomorrowPlan = document.getElementById("tomorrowPlan").value.trim();
+      const remarks = document.getElementById("remarks").value.trim() || "N/A";
+      const employeeName = document.getElementById("employeeName").value.trim();
+      const useGemini = document.getElementById("useGemini").checked;
+
+      return {
+        date: now.toLocaleDateString("en-GB"),
+        time: now.toLocaleTimeString("en-IN", {
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: true
+        }),
+
+        // Keys below match the current Google Apps Script exactly.
+        manager: managerName,
+        leads: leads,
+        calls: totalCalls,
+        connected_calls: connectedCalls,
+        interested: interested,
+        hot: hotProspects,
+        registration: registration,
+        admissions: admissions,
+        sources: leadSourcesText,
+        prospects: topProspectsText,
+        plan: tomorrowPlan,
+        remarks: remarks,
+        name: employeeName,
+
+        // These aliases are kept for frontend usage and future flexibility.
+        managerName: managerName,
+        totalCalls: totalCalls,
+        connectedCalls: connectedCalls,
+        hotProspects: hotProspects,
+        registrationCount: registration,
+        leadSources: sources,
+        leadSourcesText: leadSourcesText,
+        topProspects: prospects,
+        topProspectsText: topProspectsText,
+        tomorrowPlan: tomorrowPlan,
+        employeeName: employeeName,
+        useGemini: useGemini
+      };
+    }
+
+    function buildWhatsAppMessage(payload) {
+      return `Hi ${payload.managerName},
+
+📊 *TODAY'S REPORT*
+
+━━━━━━━━━━━━━━━
+
+*Leads:* ${payload.leads}
+*Calls:* ${payload.totalCalls}
+*Connected Calls:* ${payload.connectedCalls}
+*Interested:* ${payload.interested}
+*Hot Prospects:* ${payload.hotProspects}
+*Registration:* ${payload.registration}
+*Admissions:* ${payload.admissions}
+
+━━━━━━━━━━━━━━━
+
+📌 *Lead Sources:*
+${payload.leadSourcesText}
+
+🔥 *Top Prospects:*
+${payload.topProspectsText}
+
+🚀 *Tomorrow Plan:*
+${payload.tomorrowPlan}
+
+📝 *Remarks:*
+${payload.remarks}
+
+━━━━━━━━━━━━━━━
+
+Regards,
+*${payload.employeeName}*`;
+    }
+
+    function formatNumber(value) {
+      return new Intl.NumberFormat("en-IN", {
+        maximumFractionDigits: 0
+      }).format(Number(value || 0));
+    }
+
+    function toDisplayText(value) {
+      if (value === null || value === undefined || value === "") {
+        return "-";
+      }
+
+      if (typeof value === "object") {
+        return JSON.stringify(value);
+      }
+
+      return String(value);
+    }
+
+    function escapeHtml(value) {
+      return toDisplayText(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;");
+    }
+
+    function isNumericField(key) {
+      return /^(leads|calls|connected_calls|connectedCalls|interested|hot|registration|admissions|totalRows|totalLeads|totalCalls|totalConnectedCalls|totalInterested|totalHot|totalRegistration|totalAdmissions)$/i.test(key);
+    }
+
+    function formatTableValue(key, value) {
+      if (isNumericField(key)) {
+        return formatNumber(value);
+      }
+
+      return toDisplayText(value);
+    }
+
+    function getPersonLabel(row) {
+      return (
+        (row && (row.name || row.Name || row["Employee Name"] || row["employeeName"] || row.manager || row.Manager || row["Manager Name"])) ||
+        "Unknown"
+      );
+    }
+
+    function buildSheetQuery() {
+      const params = new URLSearchParams();
+
+      if (startDateFilter.value) {
+        params.set("startDate", startDateFilter.value);
+      }
+
+      if (endDateFilter.value) {
+        params.set("endDate", endDateFilter.value);
+      }
+
+      if (personFilter.value) {
+        params.set("person", personFilter.value);
+      }
+
+      return params;
+    }
+
+    function buildOverviewQuery() {
+      const params = new URLSearchParams();
+      const selectedPerson = String(personFilter.value || "").trim();
+
+      if (selectedPerson) {
+        params.set("scope", "person");
+        params.set("person", selectedPerson);
+        return params;
+      }
+
+      if (startDateFilter.value) {
+        params.set("startDate", startDateFilter.value);
+      }
+
+      if (endDateFilter.value) {
+        params.set("endDate", endDateFilter.value);
+      }
+
+      params.set("scope", geminiReviewScope);
+
+      return params;
+    }
+
+    function populatePersonOptions(rows) {
+      const selectedValue = personFilter.value;
+      const people = new Set();
+
+      rows.forEach((row) => {
+        const candidates = [
+          row.manager,
+          row.Manager,
+          row["Manager Name"],
+          row.name,
+          row.Name,
+          row["Employee Name"],
+          row["employeeName"]
+        ];
+
+        candidates.forEach((candidate) => {
+          const person = String(candidate || "").trim();
+          if (person) {
+            people.add(person);
+          }
+        });
+      });
+
+      const sortedPeople = Array.from(people).sort((a, b) => a.localeCompare(b));
+      personFilter.innerHTML = `<option value="">All People</option>` + sortedPeople
+        .map((person) => `<option value="${escapeHtml(person)}">${escapeHtml(person)}</option>`)
+        .join("");
+
+      if (sortedPeople.includes(selectedValue)) {
+        personFilter.value = selectedValue;
+      }
+    }
+
+    function renderPersonPerformance(info) {
+      if (!info || !info.hasSelection) {
+        personPerformanceTitle.textContent = "Particular Person Performance";
+        personPerformanceBody.innerHTML = `
+          <div class="performance-card">
+            <span>Tip</span>
+            <strong>Select a person</strong>
+          </div>
+          <div class="performance-card">
+            <span>Tip</span>
+            <strong>Choose filters</strong>
+          </div>
+          <div class="performance-card">
+            <span>Note</span>
+            <strong>Stats update live</strong>
+          </div>
+          <div class="performance-card">
+            <span>Rows</span>
+            <strong>${formatNumber((info && info.totalRows) || 0)}</strong>
+          </div>
+        `;
+        return;
+      }
+
+      personPerformanceTitle.textContent = `Performance for ${info.label}`;
+      personPerformanceBody.innerHTML = `
+        <div class="performance-card"><span>Reports</span><strong>${formatNumber(info.totalRows || 0)}</strong></div>
+        <div class="performance-card"><span>Leads</span><strong>${formatNumber(info.totalLeads || 0)}</strong></div>
+        <div class="performance-card"><span>Calls</span><strong>${formatNumber(info.totalCalls || 0)}</strong></div>
+        <div class="performance-card"><span>Connected</span><strong>${formatNumber(info.totalConnectedCalls || 0)}</strong></div>
+        <div class="performance-card"><span>Interested</span><strong>${formatNumber(info.totalInterested || 0)}</strong></div>
+        <div class="performance-card"><span>Admissions</span><strong>${formatNumber(info.totalAdmissions || 0)}</strong></div>
+      `;
+    }
+
+    function renderAiInsight(overview, row) {
+      const selectedPerson = String(personFilter.value || "").trim();
+      const overviewPerson = String(overview && overview.filters && overview.filters.person ? overview.filters.person : "").trim();
+      const activePerson = overviewPerson || selectedPerson;
+
+      if (geminiReviewScope === "person" && !activePerson) {
+        aiInsightTitle.textContent = "Gemini Person Comment";
+        aiInsightBody.innerHTML = `
+          <div class="ai-comment-card">
+            <span>Action Needed</span>
+            <p>Select a particular person from the dropdown, then click Apply Filters.</p>
+          </div>
+        `;
+        return;
+      }
+
+      if (overview && overview.ok && overview.insight) {
+        const insight = overview.insight;
+        const summary = overview.summary || {};
+        const titleLabel = activePerson || "All Data";
+        const providerLabel = overview.aiProvider === "gemini" ? "Gemini" : "Fallback";
+        const warningText = overview.aiWarning ? overview.aiWarning : "";
+
+        aiInsightTitle.textContent = activePerson
+          ? `Gemini Comment for ${titleLabel}`
+          : `Gemini Overall Review - ${titleLabel}`;
+        aiInsightBody.innerHTML = `
+          <div class="ai-comment-card">
+            <span>${providerLabel}</span>
+            <p>${escapeHtml(insight.overallComment || "No overall comment returned yet.")}</p>
+            <small>${escapeHtml(`Score: ${toDisplayText(insight.score ?? "-")}`)}</small>
+            <small>${escapeHtml(`Scope: ${activePerson ? "Particular person" : "Entire data"}`)}</small>
+          </div>
+          <div class="ai-comment-card">
+            <span>Strengths</span>
+            <p>${escapeHtml((Array.isArray(insight.strengths) && insight.strengths.length ? insight.strengths.join("\n") : "No strengths identified yet."))}</p>
+            <small>${escapeHtml(`Rows analyzed: ${summary.totalRows || 0}`)}</small>
+          </div>
+          <div class="ai-comment-card">
+            <span>Improvement</span>
+            <p>${escapeHtml((Array.isArray(insight.improvementAreas) && insight.improvementAreas.length ? insight.improvementAreas.join("\n") : "No improvement areas returned yet."))}</p>
+            <small>${escapeHtml(`Next action: ${insight.nextAction || "N/A"}`)}</small>
+          </div>
+          ${warningText ? `
+            <div class="ai-comment-card">
+              <span>Warning</span>
+              <p>${escapeHtml(warningText)}</p>
+            </div>
+          ` : ""}
+        `;
+        return;
+      }
+
+      if (!row) {
+        aiInsightTitle.textContent = "Gemini Performance Comment";
+        aiInsightBody.innerHTML = `
+          <div class="ai-comment-card">
+            <span>Tip</span>
+            <p>Select a person or apply filters to see the latest AI comment.</p>
+          </div>
+        `;
+        return;
+      }
+
+      const weeklyComment = row.weekly_comment || row.weeklyComment || "";
+      const monthlyComment = row.monthly_comment || row.monthlyComment || "";
+      const overallComment = row.ai_comment || row.aiComment || row.overall_comment || row.overallComment || "";
+      const nextAction = row.next_action || row.nextAction || "";
+      const name = getPersonLabel(row);
+
+      aiInsightTitle.textContent = `Gemini Comment for ${name}`;
+      aiInsightBody.innerHTML = `
+        <div class="ai-comment-card">
+          <span>Overall</span>
+          <p>${escapeHtml(overallComment || "No AI comment returned yet.")}</p>
+          <small>${escapeHtml(`Next action: ${nextAction || "N/A"}`)}</small>
+        </div>
+        <div class="ai-comment-card">
+          <span>Weekly</span>
+          <p>${escapeHtml(weeklyComment || "Weekly insight not available yet.")}</p>
+        </div>
+        <div class="ai-comment-card">
+          <span>Monthly</span>
+          <p>${escapeHtml(monthlyComment || "Monthly insight not available yet.")}</p>
+        </div>
+      `;
+    }
+
+    function renderDynamicTable(columns, rows) {
+      const displayColumns = Array.isArray(columns) && columns.length
+        ? columns
+        : (rows[0] ? Object.keys(rows[0]) : []);
+
+      if (displayColumns.length === 0 || rows.length === 0) {
+        dynamicTableHead.innerHTML = "";
+        latestReportsBody.innerHTML = `<tr><td colspan="1">No sheet data found for these filters.</td></tr>`;
+        return;
+      }
+
+      dynamicTableHead.innerHTML = `
+        <tr>
+          ${displayColumns.map((column) => `<th>${escapeHtml(column)}</th>`).join("")}
+        </tr>
+      `;
+
+      latestReportsBody.innerHTML = rows
+        .map((row) => `
+          <tr>
+            ${displayColumns.map((column) => `<td>${escapeHtml(formatTableValue(column, row[column]))}</td>`).join("")}
+          </tr>
+        `)
+        .join("");
+    }
+
+    function renderStats(data, overview = null) {
+      const stats = data && data.stats ? data.stats : {};
+      const rows = Array.isArray(data && data.rows) ? data.rows : [];
+      const columns = Array.isArray(data && data.columns) ? data.columns : [];
+      const personPerformance = data && data.personPerformance ? data.personPerformance : null;
+
+      kpiGrid.innerHTML = `
+        <div class="kpi-card"><span>Total Reports</span><strong>${formatNumber(stats.totalRows || rows.length)}</strong></div>
+        <div class="kpi-card"><span>Total Leads</span><strong>${formatNumber(stats.totalLeads || 0)}</strong></div>
+        <div class="kpi-card"><span>Total Calls</span><strong>${formatNumber(stats.totalCalls || 0)}</strong></div>
+        <div class="kpi-card"><span>Total Admissions</span><strong>${formatNumber(stats.totalAdmissions || 0)}</strong></div>
+      `;
+
+      renderPersonPerformance(personPerformance);
+
+      const managers = Array.isArray(stats.topManagers) ? stats.topManagers : [];
+      if (managers.length === 0) {
+        topManagersList.innerHTML = `<div class="mini-row"><div><strong>No manager data yet</strong><small>Submit a report to start building stats.</small></div></div>`;
+      } else {
+        topManagersList.innerHTML = managers.map((manager) => `
+          <div class="mini-row">
+            <div>
+              <strong>${manager.manager || "Unknown"}</strong>
+              <small>${formatNumber(manager.reports || 0)} reports · ${formatNumber(manager.leads || 0)} leads</small>
+            </div>
+            <strong>${formatNumber(manager.admissions || 0)}</strong>
+          </div>
+        `).join("");
+      }
+
+      const latest = Array.isArray(stats.latestRows) ? stats.latestRows : rows.slice().reverse();
+      renderAiInsight(overview, latest[0] || rows[0] || null);
+      renderDynamicTable(columns, latest);
+
+      const sourceText = data && data.ok ? "Sheet stats loaded successfully." : "Unable to read sheet stats.";
+      const filterTextParts = [];
+      if (data && data.filters) {
+        if (data.filters.startDate) filterTextParts.push(`from ${data.filters.startDate}`);
+        if (data.filters.endDate) filterTextParts.push(`to ${data.filters.endDate}`);
+        if (data.filters.person) filterTextParts.push(`for ${data.filters.person}`);
+      }
+      const rowHint = latest.length ? `Showing ${latest.length} latest rows.` : "";
+      sheetStatus.textContent = `${sourceText} ${stats.totalRows ? `Last updated from ${stats.totalRows} rows.` : ""} ${rowHint} ${filterTextParts.length ? `Filters: ${filterTextParts.join(" ")}` : ""}`;
+    }
+
+    async function loadSheetStats(options = {}) {
+      if (!isAdminLoggedIn()) {
+        sheetStatus.textContent = "Admin login required to load sheet stats.";
+        return;
+      }
+
+      sheetStatus.textContent = "Loading sheet stats...";
+
+      try {
+        const params = buildSheetQuery();
+        const url = params.toString() ? `${SHEET_STATS_URL}?${params.toString()}` : SHEET_STATS_URL;
+        const response = await fetch(url, { method: "GET" });
+        const data = await response.json();
+        const overview = data && data.aiOverview ? data.aiOverview : null;
+        if (options.refreshPeople || !sheetPeopleLoaded) {
+          populatePersonOptions(Array.isArray(data.rows) ? data.rows : []);
+          sheetPeopleLoaded = true;
+        }
+        renderStats(data, overview);
+      } catch (error) {
+        console.error("Sheet stats load failed:", error);
+        sheetStatus.textContent = "Could not load sheet stats. Check your Apps Script doGet deployment or webhook URL.";
+        renderStats({ ok: true, columns: [], rows: [], stats: {}, personPerformance: null }, null);
+      }
+    }
+
+    function handleAdminLogin() {
+      const username = adminUsername.value.trim();
+      const password = adminPassword.value;
+
+      if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+        closeAdminModal();
+        setAdminState(true);
+        return;
+      }
+
+      adminAuthMessage.textContent = "Wrong username or password.";
+    }
+
+    async function submitReportToServer(payload) {
+      const response = await fetch(REPORT_SUBMIT_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await response.json();
+      if (!response.ok || !data.ok) {
+        throw new Error(data.error || "Report submission failed.");
+      }
+
+      return data;
+    }
+
+    function validateProspects() {
+      const prospects = getProspects();
+      const hasPartialProspect = prospects.some((prospect) => !prospect.name || !prospect.course || !prospect.contact);
+
+      if (hasPartialProspect) {
+        statusMessage.textContent = "Please complete all filled prospect rows or leave them fully empty.";
+        return false;
+      }
+
+      return true;
+    }
+
+    addProspectButton.addEventListener("click", () => {
+      createProspectRow();
+    });
+
+    prospectsContainer.addEventListener("click", (event) => {
+      const target = event.target;
+
+      if (target.classList.contains("remove-prospect-button") && prospectsContainer.children.length > 1) {
+        target.closest(".prospect-row").remove();
+        updateRemoveButtons();
+      }
+    });
+
+    reportForm.addEventListener("reset", () => {
+      window.setTimeout(() => {
+        prospectsContainer.innerHTML = "";
+        prospectIndex = 0;
+        createProspectRow();
+        statusMessage.textContent = "Form reset. Ready for a new report.";
+      }, 0);
+    });
+
+    reportForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      if (!reportForm.checkValidity()) {
+        reportForm.reportValidity();
+        statusMessage.textContent = "Please fill all required fields before submitting.";
+        return;
+      }
+
+      if (!validateProspects()) {
+        return;
+      }
+
+      const payload = buildPayload();
+      const whatsappWindow = window.open("about:blank", "_blank");
+
+      if (!whatsappWindow) {
+        statusMessage.textContent = "Popup blocked. Please allow popups for WhatsApp submission.";
+        return;
+      }
+
+      statusMessage.textContent = "Generating Gemini comment and saving your report...";
+
+      try {
+        const result = await submitReportToServer(payload);
+        const whatsappUrl = result.whatsappUrl || `${WHATSAPP_URL}${encodeURIComponent(result.whatsappMessage || buildWhatsAppMessage(payload))}`;
+
+        whatsappWindow.location.href = whatsappUrl;
+        statusMessage.textContent = "Report submitted successfully. Redirecting to WhatsApp...";
+
+        if (isAdminLoggedIn()) {
+          loadSheetStats({ refreshPeople: true });
+        }
+      } catch (error) {
+        console.error("Submission error:", error);
+        if (whatsappWindow && !whatsappWindow.closed) {
+          whatsappWindow.close();
+        }
+        statusMessage.textContent = "Submission failed. Please check your server, Gemini key, or Apps Script deployment.";
+        alert(error instanceof Error ? error.message : "Submission failed.");
+      }
+    });
+
+    adminAuthButton.addEventListener("click", () => {
+      if (isAdminLoggedIn()) {
+        setAdminState(false);
+        return;
+      }
+
+      openAdminModal();
+    });
+
+    adminCancelButton.addEventListener("click", closeAdminModal);
+    adminBackdrop.addEventListener("click", closeAdminModal);
+    adminLoginButton.addEventListener("click", handleAdminLogin);
+    adminPassword.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        handleAdminLogin();
+      }
+    });
+
+    applyFiltersButton.addEventListener("click", () => {
+      loadSheetStats();
+    });
+
+    resetFiltersButton.addEventListener("click", () => {
+      startDateFilter.value = "";
+      endDateFilter.value = "";
+      personFilter.value = "";
+      setGeminiReviewScope("overall");
+      loadSheetStats({ refreshPeople: true });
+    });
+
+    geminiScopeOverallButton.addEventListener("click", () => {
+      setGeminiReviewScope("overall");
+    });
+
+    geminiScopePersonButton.addEventListener("click", () => {
+      setGeminiReviewScope("person");
+    });
+
+    latestReportsPrevButton.addEventListener("click", () => {
+      scrollLatestReports(-1);
+    });
+
+    latestReportsNextButton.addEventListener("click", () => {
+      scrollLatestReports(1);
+    });
+
+    personFilter.addEventListener("change", () => {
+      if (personFilter.value) {
+        setGeminiReviewScope("person");
+        return;
+      }
+
+      setGeminiReviewScope("overall");
+    });
+
+    refreshStatsButton.addEventListener("click", loadSheetStats);
+
+    createProspectRow();
+    syncGeminiScopeButtons();
+    syncAdminState();
+  </script>
 </body>
 </html>

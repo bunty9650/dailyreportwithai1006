@@ -1,0 +1,12 @@
+{
+  "name": "ai-employee-monitoring-system",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Employee daily reporting and AI feedback system MVP",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node src/server.js",
+    "check": "node --check src/server.js"
+  }
+}
